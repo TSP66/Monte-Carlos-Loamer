@@ -10,7 +10,7 @@ using DelimitedFiles
 include("gridProb.jl")
 using .gridProb
 #using GLMakie
-
+arc_probs = gridProb.arc_probs
 
 function check(x,i) # Debugging function to check nugget is always going down hill 
     if(x[i] < x[i+1])
@@ -109,9 +109,32 @@ function monte_carlo(x::Int64,y::Int64,elv::Array{Float32,2},arc_probs::Matrix{F
     heat_map
 end
 
-function loam(samples)
-
+function loam(Samples::Vector{Sample},elv::Array{Float32,2},arc_probs::Matrix{Float32},simulations_per_sample::Int64)::Matrix{Float64}
+    heat_map = zeros(size(elv))
+    for sample in Samples
+        heat_map += monte_carlo(sample.x,sample.y,elv,arc_probs,simulations_per_sample,false)
+    end
+    heat_map
 end
+
+function loam(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32},n_simulations::Int64)::Matrix{Float64}
+
+    nthreads = Threads.nthreads() 
+    sims_per_sample::Int64 = convert(Int64, n_simulations/nthreads ::Float64)
+
+    ThreadSums = Vector{Matrix{Float64}}(undef, nthreads)
+
+    Threads.@threads for i in 1:nthreads
+        ThreadSums[i] = monte_carlo(sample.x,sample.y,elv,arc_probs,sims_per_sample,false)
+    end
+
+    total_heat_map = zeros(size(elv))
+
+    for sum in ThreadSums total_heat_map += sum end
+
+    return(total_heat_map)
+end
+
 #1587
 #1108
 X = 1587
