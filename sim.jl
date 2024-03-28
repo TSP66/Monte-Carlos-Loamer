@@ -120,7 +120,7 @@ end
 function loam(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32},n_simulations::Int64)::Matrix{Float64}
 
     nthreads = Threads.nthreads() 
-    sims_per_sample::Int64 = convert(Int64, n_simulations/nthreads ::Float64)
+    sims_per_sample::Int64 = convert(Int64, n_simulations/nthreads::Float64)
 
     ThreadSums = Vector{Matrix{Float64}}(undef, nthreads)
 
@@ -140,10 +140,12 @@ end
 X = 1587
 Y = 1108
 
-heat_map = monte_carlo(X,Y,elv_data,arc_probs,10000,true)
+elv_data = elv_data[Y-200:Y+200,X-200:X+200]
 
-z = elv_data[Y-150:Y+150,X-150:X+150]
-heat_map = heat_map[Y-150:Y+150,X-150:X+150]
+heat_map = monte_carlo(201,201,elv_data,arc_probs,10000,true)
+
+z = elv_data
+heat_map = heat_map
 r, c = size(z)
 x = 1:c
 y = 1:r
