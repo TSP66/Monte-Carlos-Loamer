@@ -53,7 +53,7 @@ function choose(elv::Matrix{Float32},arc_probs::Matrix{Float32},mode::Bool)::Arr
     current_elevation = elv[2,2]
     relative_elevation = Nothing
     #Mode 0 -> Loam, Mode 1 -> Rev-Loam 
-    if(mode) relative_elevation = elv .- current_elevation else relative_elevation = -current_elevation .+ elv end
+    if(mode) relative_elevation = elv .- current_elevation else relative_elevation = -1*elv .+ current_elevation end
 
     if minimum(relative_elevation) == 0 # Everything is uphill
         return [0,0]
@@ -67,8 +67,13 @@ function choose(elv::Matrix{Float32},arc_probs::Matrix{Float32},mode::Bool)::Arr
 
         choice = sample([[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]], Weights(flatten(weights,3,3)))
     
-        if(choice == [0,0]) throw("Something impossible was chosen") end 
-        if(elv[2+choice[2],2+choice[1]] > current_elevation) throw("Something higher was chosen in rev-loam mode or something lower was chosen in loam mode") end
+        if(choice == [0,0]) throw("Something impossible was chosen") end
+
+        if(mode)
+            if(elv[2+choice[2],2+choice[1]] > current_elevation) throw("Something higher was chosen in rev-loam mode") end
+        else
+            if(elv[2+choice[2],2+choice[1]] < current_elevation) throw("Something lower was chosen in loam mode") end
+        end 
 
         return choice
 
@@ -120,7 +125,7 @@ end
 function loam(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32},n_simulations::Int64)::Matrix{Float64}
 
     nthreads = Threads.nthreads() 
-    sims_per_sample::Int64 = convert(Int64, n_simulations/nthreads::Float64)
+    sims_per_sample::Int64 = convert(Int64, n_simulations/nthreads)
 
     ThreadSums = Vector{Matrix{Float64}}(undef, nthreads)
 
@@ -140,9 +145,12 @@ end
 X = 1587
 Y = 1108
 
-elv_data = elv_data[Y-200:Y+200,X-200:X+200]
+res = 200
 
-heat_map = monte_carlo(201,201,elv_data,arc_probs,10000,true)
+elv_data = elv_data[Y-res:Y+res,X-res:X+res]
+
+#heat_map = monte_carlo(201,201,elv_data,arc_probs,30000,true)
+heat_map = loam(Sample(240,289,"-"),elv_data,arc_probs,30000)
 
 z = elv_data
 heat_map = heat_map
