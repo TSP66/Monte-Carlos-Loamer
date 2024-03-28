@@ -61,7 +61,7 @@ function choose(elv::Matrix{Float32},arc_probs::Matrix{Float32},mode::Bool)::Arr
         relative_elevation[relative_elevation .> 0] .= 0
         relative_elevation = abs.(relative_elevation)
 
-        weights = (relative_elevation ./ sum(relative_elevation)).^1 # Linear weighting - possible improvement here
+        weights = (relative_elevation ./ sum(relative_elevation)).^0.5 # Linear weighting - possible improvement here
         weights = weights .* arc_probs # Multiple weights by arc length
         weights = weights ./ sum(weights)
 
@@ -140,23 +140,42 @@ function loam(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32},n_
     return(total_heat_map)
 end
 
+function revloam(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32},n_simulations::Int64)::Matrix{Float64}
+
+    nthreads = Threads.nthreads() 
+    sims_per_sample::Int64 = convert(Int64, n_simulations/nthreads)
+
+    ThreadSums = Vector{Matrix{Float64}}(undef, nthreads)
+
+    Threads.@threads for i in 1:nthreads
+        ThreadSums[i] = monte_carlo(sample.x,sample.y,elv,arc_probs,sims_per_sample,true)
+    end
+
+    total_heat_map = zeros(size(elv))
+
+    for sum in ThreadSums total_heat_map += sum end
+
+    return(total_heat_map)
+end
+
 #1587
 #1108
 X = 1587
 Y = 1108
 
-res = 200
+res = 220
 
 elv_data = elv_data[Y-res:Y+res,X-res:X+res]
 
 #heat_map = monte_carlo(201,201,elv_data,arc_probs,30000,true)
-heat_map = loam(Sample(240,289,"-"),elv_data,arc_probs,30000)
+heat_map = revloam(Sample(res+1,res+1,"-"),elv_data,arc_probs,100000)
 
 z = elv_data
-heat_map = heat_map
 r, c = size(z)
 x = 1:c
 y = 1:r
+
+heat_map = log.(heat_map .+ 1)
 
 fig=Plot([surface(x=x, y=y, z=z, surfacecolor=heat_map, 
         colorscale=colors.gist_earth, colorbar_thickness=25, colorbar_len=0.75
