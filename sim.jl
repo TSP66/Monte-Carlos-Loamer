@@ -8,16 +8,7 @@ using DelimitedFiles
 include("gridProb.jl")
 using .gridProb
 include("loam.jl")
-using .loam
-
-
-function check(x,i) # Debugging function to check nugget is always going down hill 
-    if(x[i] < x[i+1])
-        throw("You've still got a bug")
-    else
-        if(i+1 == length(x)) return 0 else return check(x,i+1) end
-    end
-end
+#using .loam
 
 #Section 1: Open TIF File
 

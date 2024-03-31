@@ -1,14 +1,17 @@
-module loam
-
-export Sample
-export Loam
-export revLoam
 
 struct Sample
     x::Int64
     y::Int64
     type::String
     weighting::Float64
+end
+
+function check(x,i) # Debugging function to check nugget is always going down hill 
+    if(x[i] < x[i+1])
+        throw("You've still got a bug")
+    else
+        if(i+1 == length(x)) return 0 else return check(x,i+1) end
+    end
 end
 
 function flatten(td_array,length,width)::Array{Float64,1} # Builtin flatten gives unsuitable results
@@ -137,5 +140,3 @@ function revLoam(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32}
 
     return(total_heat_map)
 end
-
-end # End of module 
