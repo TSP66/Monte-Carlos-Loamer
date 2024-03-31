@@ -67,14 +67,23 @@ function trace(start_x::Int64,start_y::Int64,elv::Array{Float32, 2},arc_probs::M
     
     route = Nothing
 
-    while choice != [0,0]
-        adjacent_heights = elv[y-1:y+1,x-1:x+1]
-        choice = choose(adjacent_heights,arc_probs,mode)
-        x += choice[1]
-        y += choice[2]
-        if(route === Nothing) route = [x y elv[y,x]] else route = [route;[x y elv[y,x]]] end
-        steps += 1
-        map[y,x] = 1
+    try
+        while choice != [0,0]
+            adjacent_heights = elv[y-1:y+1,x-1:x+1]
+            choice = choose(adjacent_heights,arc_probs,mode)
+            x += choice[1]
+            y += choice[2]
+            if(route === Nothing) route = [x y elv[y,x]] else route = [route;[x y elv[y,x]]] end
+            steps += 1
+            map[y,x] = 1
+        end
+    catch y
+        if(isa(y, BoundsError))
+            @warn "Out of bounds - Consider increasing focus area"
+            return trace(start_x,start_y,elv,arc_probs,mode)
+        else 
+            throw(y)
+        end
     end
 
     return map
@@ -89,18 +98,26 @@ function monte_carlo(x::Int64,y::Int64,elv::Array{Float32,2},arc_probs::Matrix{F
     heat_map
 end
 
-function Loam(Samples::Vector{Sample},elv::Array{Float32,2},arc_probs::Matrix{Float32},simulations_per_sample::Int64)::Matrix{Float64}
-    heat_map = zeros(size(elv))
+function Loam(Samples::Vector{Sample},elv::Array{Float32,2},arc_probs::Matrix{Float32},simulations_per_sample::Int64,product::Bool)::Matrix{Float64}
+    heat_map = if(product) ones(size(elv)) else zeros(size(elv)) end
     for sample in Samples
-        heat_map += monte_carlo(sample.x,sample.y,elv,arc_probs,simulations_per_sample,false)
+        if(product)
+            heat_map .*= Loam(sample,elv,arc_probs,simulations_per_sample)
+        else
+            heat_map += Loam(sample,elv,arc_probs,simulations_per_sample)
+        end
     end
     heat_map
 end
 
-function revLoam(Samples::Vector{Sample},elv::Array{Float32,2},arc_probs::Matrix{Float32},simulations_per_sample::Int64)::Matrix{Float64}
-    heat_map = zeros(size(elv))
+function revLoam(Samples::Vector{Sample},elv::Array{Float32,2},arc_probs::Matrix{Float32},simulations_per_sample::Int64,product::Bool)::Matrix{Float64}
+    heat_map = if(product) ones(size(elv)) else zeros(size(elv)) end
     for sample in Samples
-        heat_map += monte_carlo(sample.x,sample.y,elv,arc_probs,simulations_per_sample,true)
+        if(product)
+            heat_map *= revLoam(sample.x,sample.y,elv,arc_probs,simulations_per_sample)
+        else
+            heat_map += revLoam(sample.x,sample.y,elv,arc_probs,simulations_per_sample)
+        end
     end
     heat_map
 end
@@ -139,4 +156,8 @@ function revLoam(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32}
     for sum in ThreadSums total_heat_map += sum end
 
     return(total_heat_map)
+end
+
+function prospectivity_map(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32},n_simulations::Int64)::Matrix{Float64}
+    return(revLoam(sample,elv,arc_probs,n_simulations)+Loam(sample,elv,arc_probs,n_simulations))
 end
