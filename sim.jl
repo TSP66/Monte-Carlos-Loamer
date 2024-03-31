@@ -32,8 +32,10 @@ res = 240
 elv_data = elv_data[Y-res:Y+res,X-res:X+res]
 
 #heat_map = monte_carlo(201,201,elv_data,arc_probs,30000,true)
-#heat_map = revLoam(Sample(res+1,res+1,"-",0.0),elv_data,arc_probs,100000)
-heat_map = Loam([Sample(res+25,res+25,"-",1), Sample(res+30,res+50,"-",1)],elv_data,arc_probs,25000,true)
+#heat_map = revLoam(Sample(res+1,res+1,"-",0.0),elv_data,arc_probs,100000,false)
+#heat_map = Loam([Sample(res+25,res+25,"-",1), Sample(res+30,res+50,"-",1)],elv_data,arc_probs,250000,true)
+
+heat_map = revLoam(reef(res+20,res+20,100,125,"Normal"),elv_data,arc_probs,30000,false)
 
 z = elv_data
 r, c = size(z)
