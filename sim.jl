@@ -34,15 +34,23 @@ elv_data = elv_data[Y-res:Y+res,X-res:X+res]
 #heat_map = monte_carlo(201,201,elv_data,arc_probs,30000,true)
 #heat_map = revLoam(Sample(res+1,res+1,"-",0.0),elv_data,arc_probs,100000,false)
 #heat_map = Loam([Sample(res+25,res+25,"-",1), Sample(res+30,res+50,"-",1)],elv_data,arc_probs,250000,true)
+#Reef = reef(res+40,res+40,190,175,"Normal")
+Reef = reef(res-20,res-20,70,75,50,elv_data,"-")
 
-heat_map = revLoam(reef(res+20,res+20,100,125,"Normal"),elv_data,arc_probs,30000,false)
+heat_map = revLoam(Reef,elv_data,arc_probs,100000,false)
+
+max = maximum(heat_map)
+
+for sample in Reef
+        heat_map[sample.y,sample.x] = max+1
+end
 
 z = elv_data
 r, c = size(z)
 x = 1:c
 y = 1:r
 
-heat_map = log.(heat_map .+ 1)
+#heat_map = log.(heat_map .+ 1)
 
 fig=Plot([surface(x=x, y=y, z=z, surfacecolor=heat_map, 
         colorscale=colors.gist_earth, colorbar_thickness=25, colorbar_len=0.75
