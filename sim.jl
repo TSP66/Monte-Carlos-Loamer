@@ -12,7 +12,7 @@ include("loam.jl")
 
 #Section 1: Open TIF File
 
-file = ArchGDAL.read(joinpath(@__DIR__,"christmasislandz48.tif"))
+file = ArchGDAL.read(joinpath(@__DIR__,"Tasmania_Statewide_2m_DEM_14-08-2021.tif"))#"christmasislandz48.tif"))
 
 data = ArchGDAL.getband(file,1) 
 
@@ -20,24 +20,27 @@ elv_data = ArchGDAL.read(file)
 
 elv_data[elv_data .<= 0] .= 0
 
-elv_data = reshape(elv_data,4200,3600)
+#print(size(elv_data))
+
+elv_data = reshape(elv_data,2911,7207)#4200,3600)
 
 #1587
 #1108
-X = 1587
+X = 3587
 Y = 1108
 
-res = 240
+res = 300
 
 elv_data = elv_data[Y-res:Y+res,X-res:X+res]
 
 #heat_map = monte_carlo(201,201,elv_data,arc_probs,30000,true)
-#heat_map = revLoam(Sample(res+1,res+1,"-",0.0),elv_data,arc_probs,100000,false)
+heat_map = revLoam(Sample(res+1,res+1,"-",0.0),elv_data,arc_probs,100000)
 #heat_map = Loam([Sample(res+25,res+25,"-",1), Sample(res+30,res+50,"-",1)],elv_data,arc_probs,250000,true)
 #Reef = reef(res+40,res+40,190,175,"Normal")
-Reef = reef(res-20,res-20,70,75,50,elv_data,"-")
 
-heat_map = revLoam(Reef,elv_data,arc_probs,100000,false)
+#Reef = reef(res-20,res-30,70,250,35,elv_data,"-")
+
+#heat_map = revLoam(Reef,elv_data,arc_probs,100000,false)
 
 max = maximum(heat_map)
 
@@ -46,9 +49,9 @@ for sample in Reef
 end
 
 z = elv_data
-r, c = size(z)
-x = 1:c
-y = 1:r
+x_bounds, y_bounds = size(z)
+x = 1:x_bounds
+y = 1:y_bounds
 
 #heat_map = log.(heat_map .+ 1)
 

@@ -53,7 +53,6 @@ function reef(centre_x::Int64,centre_y::Int64,trend::Int64,length::Int64,dip::In
 
     for y in min_y:max_y
         for x in min_x:max_x
-            println(abs(plane(x,y)-elv[y,x]))
             if(abs(plane(x,y)-elv[y,x])<1) 
                 push!(samples,Sample(x,y,type,1.0)) 
             end
