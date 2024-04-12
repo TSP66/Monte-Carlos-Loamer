@@ -167,6 +167,6 @@ function revLoam(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32}
     return(total_heat_map)
 end
 
-function prospectivity_map(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32},n_simulations::Int64)::Matrix{Float64}
+function prospectivity_map(sample::Sample,elv::Array{Float32,2},arc_probs::Matrix{Float32},n_simulations::Int64)::Matrix{Float64} # Useful for metal dectetor target generation
     return(revLoam(sample,elv,arc_probs,n_simulations)+Loam(sample,elv,arc_probs,n_simulations))
 end

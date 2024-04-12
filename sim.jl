@@ -45,7 +45,7 @@ heat_map = revLoam(Reef,elv_data,arc_probs,100000,false)
 max = maximum(heat_map)
 
 for sample in Reef
-        heat_map[sample.y,sample.x] = max+1
+        heat_map[sample.y,sample.x] = max+1 # Set the reef to the maximum value as to make it evident
 end
 
 z = elv_data
@@ -53,7 +53,7 @@ x_bounds, y_bounds = size(z)
 x = 1:x_bounds
 y = 1:y_bounds
 
-heat_map = log.(heat_map .+ 1)
+heat_map = log.(heat_map .+ 1) # Display log-probablity
 
 fig=Plot([surface(x=x, y=y, z=z, surfacecolor=heat_map, 
         colorscale=colors.gist_earth, colorbar_thickness=25, colorbar_len=0.75
@@ -62,4 +62,4 @@ fig=Plot([surface(x=x, y=y, z=z, surfacecolor=heat_map,
                         showscale=false)],
 Layout(width=600, height=600, font_size=10, scene_camera_eye=attr(x=1.6, y=1.6, z=1)))
 
-fig
+fig # Display figure
