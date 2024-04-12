@@ -8,7 +8,7 @@ This tool could be of use in arid areas with a relatively thin overburden layer.
 
 Functionality is being added to, suggestions are welcome.
 
-An example of an auriferous reef on the slopes of the [Jukes-Darwin Mining Field](https://en.wikipedia.org/wiki/Mount_Jukes_mine_sites) from a variety of perspectives. 
+An example of the log-anomaly presented by an auriferous reef on the slopes of the [Jukes-Darwin Mining Field](https://en.wikipedia.org/wiki/Mount_Jukes_mine_sites) from a variety of perspectives:
 
 <table>
   <tr>
