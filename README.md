@@ -7,3 +7,5 @@ This is a Julia tool that employs [Monte Carlo methods](https://en.wikipedia.org
 This tool could be of use in arid areas with a relatively thin overburden layer. The user is cautioned against using the tool in areas with significant overburden, glacial activity and/or landslides.
 
 Functionality is being added to, suggestions are welcome.
+
+![An example of a auriferous reef](https://github.com/TSP66/Monte-Carlos-Loamer/blob/main/Images/Example_1.png)

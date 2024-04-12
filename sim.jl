@@ -12,7 +12,7 @@ include("loam.jl")
 
 #Section 1: Open TIF File
 
-file = ArchGDAL.read(joinpath(@__DIR__,"Tasmania_Statewide_2m_DEM_14-08-2021.tif"))#"christmasislandz48.tif"))
+file = ArchGDAL.read(joinpath(@__DIR__,"Data/mountdarwin.tif"))#"christmasislandz48.tif"))
 
 data = ArchGDAL.getband(file,1) 
 
@@ -29,7 +29,7 @@ elv_data = reshape(elv_data,2911,7207)#4200,3600)
 X = 4087
 Y = 1558
 
-res = 550
+res = 650
 
 elv_data = elv_data[Y-res:Y+res,X-res:X+res]
 
