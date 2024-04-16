@@ -1,0 +1,19 @@
+# Relative location of TIF elevation dataset
+file = "Data/mountdarwin.tif"
+
+# The side length of the square that is the focus area. If nan/undecleared the entire TIF will be used
+square_size = 600 
+
+#The coordinates of the focus square
+centre_of_square_x = 1200 
+centre_of_square_y = 1200
+
+#Objective options: "Loam", "Reverse-Loam", "prospectivityMap"
+#If prospect.type = "Loam", "Reverse-Loam" or "prospectivityMap", prospect.samples must 
+#be decleared and have at least one valid x,y pair. 
+#Note x,y pairs in prospect.samples are relative to the focus area, NOT the entire
+#TIFF file.
+
+prospect.type = "Loam"
+
+prospect.samples = [[100,100],[100,100]]
