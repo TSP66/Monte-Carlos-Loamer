@@ -12,7 +12,7 @@ include("loam.jl")
 
 #Section 1: Open TIF File
 
-file = ArchGDAL.read(joinpath(@__DIR__,"Data/mountdarwin.tif"))#"christmasislandz48.tif"))
+file = ArchGDAL.read(joinpath(@__DIR__,"Data/mountdarwin.tif"))#"island.tif"))
 
 data = ArchGDAL.getband(file,1) 
 
