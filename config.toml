@@ -2,10 +2,10 @@
 
 sim.file = "Data/mountdarwin.tif" # Relative location of TIF elevation dataset
 
-sim.square_size = 600 # The side length of the square that is the focus area. If nan/undecleared the entire TIF will be used
+sim.square_size = 650 # The side length of the square that is the focus area. If nan/undecleared the entire TIF will be used
 
-sim.centre_of_square_x = 1200 #The coordinates of the focus square
-sim.centre_of_square_y = 1200
+sim.centre_of_square_x = 4087 #The coordinates of the focus square
+sim.centre_of_square_y = 1558
 
 sim.type = "Loam" #prospect.type options: "Loam", "LoamX", "Reverse-Loam", "prospectivityMap"
 

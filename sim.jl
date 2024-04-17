@@ -5,38 +5,71 @@ using ImageView
 using ArchGDAL
 using StatsBase
 using DelimitedFiles
+using TOML
 include("gridProb.jl")
 using .gridProb
 include("loam.jl")
 #using .loam
 
-#Section 1: Open TIF File
+function loadData(file_name)
 
-file = ArchGDAL.read(joinpath(@__DIR__,"Data/mountdarwin.tif"))#"island.tif"))
+    file = ArchGDAL.read(file_name)
 
-data = ArchGDAL.getband(file,1) 
+    elv_data = ArchGDAL.read(file)
 
-elv_data = ArchGDAL.read(file)
+    elv_data[elv_data .<= 0] .= 0
 
-elv_data[elv_data .<= 0] .= 0
+    elv_data = reshape(elv_data,size(elv_data,1),size(elv_data,2))
 
-#print(size(elv_data))
+    return(elv_data)
+end
 
-elv_data = reshape(elv_data,2911,7207)#4200,3600)
+config_file = open("config.toml", "r")
 
-#1587
-#1108
-X = 4087
-Y = 1558
+config = TOML.parse(read(config_file, String))
 
-res = 650
+close(config_file)
 
-elv_data = elv_data[Y-res:Y+res,X-res:X+res]
 
-#heat_map = monte_carlo(201,201,elv_data,arc_probs,30000,true)
-#heat_map = revLoam(Sample(res+1,res+1,"-",0.0),elv_data,arc_probs,10000)
-#heat_map = Loam([Sample(res+25,res+25,"-",1), Sample(res+30,res+50,"-",1)],elv_data,arc_probs,250000,true)
-#Reef = reef(res+40,res+40,190,175,"Normal")
+#Section 1: Loam parameters
+
+elv_data = loadData(joinpath(@__DIR__,config["sim"]["file"]))#"island.tif"))
+
+X = config["sim"]["centre_of_square_x"]
+Y = config["sim"]["centre_of_square_y"]
+
+#Try loading res data
+try
+    res = floor(Int,config["sim"]["square_size"]/2)
+    elv_data = elv_data[Y-res:Y+res,X-res:X+res]
+catch e
+    @warn "res unspecified, defaulting to entire TIF image.\
+    If image is large this may result in very slow simulations\
+    or the inability to display the simulation."
+end
+
+#Load deposit information (if it exists)
+try
+    deposit_x = config["deposit"]["center_x"]
+    deposit_y = config["deposit"]["center_y"]
+    length = config["deposit"]["length"]
+    trend = config["deposit"]["trend"]
+    dip = config["deposit"]["dip"]
+
+    type = "-"
+    try
+        type = config["deposit"]["type"]
+    catch
+        @warn "Type of deposit not decleared, defaulting to normal"
+    end
+    
+    Reef = reef(size(elv_data,2)+deposit_x,size(elv_data,1)+deposit_y,50,250,70,elv_data,"-")
+
+catch e
+    print("Deposit configuration not found (or configuration incomplete, defaulting to singe sample)")
+
+
+end
 
 Reef = reef(res-20,res-30,50,250,70,elv_data,"-")
 
