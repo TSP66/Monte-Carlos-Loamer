@@ -1,19 +1,46 @@
-# Relative location of TIF elevation dataset
-file = "Data/mountdarwin.tif"
+#Simulation options
 
-# The side length of the square that is the focus area. If nan/undecleared the entire TIF will be used
-square_size = 600 
+sim.file = "Data/mountdarwin.tif" # Relative location of TIF elevation dataset
 
-#The coordinates of the focus square
-centre_of_square_x = 1200 
-centre_of_square_y = 1200
+sim.square_size = 600 # The side length of the square that is the focus area. If nan/undecleared the entire TIF will be used
 
-#Objective options: "Loam", "Reverse-Loam", "prospectivityMap"
-#If prospect.type = "Loam", "Reverse-Loam" or "prospectivityMap", prospect.samples must 
-#be decleared and have at least one valid x,y pair. 
-#Note x,y pairs in prospect.samples are relative to the focus area, NOT the entire
-#TIFF file.
+sim.centre_of_square_x = 1200 #The coordinates of the focus square
+sim.centre_of_square_y = 1200
 
-prospect.type = "Loam"
+sim.type = "Loam" #prospect.type options: "Loam", "LoamX", "Reverse-Loam", "prospectivityMap"
 
-prospect.samples = [[100,100],[100,100]]
+sim.sims = 100000 # The total number of simulations to perform
+
+#Either prospect.samples must be decleared or prospect.deposit must be, both can be decleared 
+
+
+#Samples variables:
+
+prospect.samples = [[100,100],[100,100]] # The relative (to the focus square) location of sample
+
+prospect.samples_form = ["Coarse", "Fine"] # len(propsect.samples) must equal prospect prospect.samples_form
+
+prospect.samples_weights = [0.5,0.1] # len(prospect.weights) must equal prospect prospect.samples_form. Weights need not add to one
+
+#Deposit variables:
+
+deposit.center_x = 100 # The relative (to the focus square) location of sample
+deposit.center_y = 100 
+
+deposit.trend = 50 # Trend (strike direction of the deposit)
+
+deposit.length = 100 # Length of deposit
+
+deposit.dip = 50 # Dip of the deposit
+
+deposit.type = "Fine" # Deposit equivalent to samples.samples_form
+
+# Display options
+
+display.log = true # Display the log of probabilities
+
+display.highlight_deposit = true # Highlight the deposit on the display
+
+# Simulation options
+
+
