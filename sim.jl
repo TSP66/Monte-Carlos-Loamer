@@ -39,9 +39,10 @@ X = config["sim"]["centre_of_square_x"]
 Y = config["sim"]["centre_of_square_y"]
 
 #Try loading res data
+res = nothing
 try
-    res = floor(Int,config["sim"]["square_size"]/2)
-    elv_data = elv_data[Y-res:Y+res,X-res:X+res]
+    global res = floor(Int,config["sim"]["square_size"]/2)
+    global elv_data = elv_data[Y-res:Y+res,X-res:X+res]
 catch e
     @warn "res unspecified, defaulting to entire TIF image.\
     If image is large this may result in very slow simulations\
@@ -59,7 +60,7 @@ try
     trend = config["deposit"]["trend"]
     dip = config["deposit"]["dip"]
 
-    type = "-"
+    local type = "-"
 
     try
         type = config["deposit"]["type"]
@@ -67,7 +68,7 @@ try
         @warn "Type of deposit not decleared, defaulting to normal (no expodent to gradient weighting)"
     end
     
-    Reef = reef(size(elv_data,2)+deposit_x,size(elv_data,1)+deposit_y,trend,length,dip,elv_data,type)
+    global Reef = reef(deposit_x,deposit_y,trend,length,dip,elv_data,type)
 
 catch e
     print("Deposit configuration not found (or configuration incomplete, defaulting to singe sample)")
@@ -80,11 +81,11 @@ nSamples = 0
 Samples = nothing
 
 try
-    nSamples = size(config["prospect"]["samples"],1)
-    Samples = [Sample(config["prospect"]["samples"][i,:][0],
-                      config["prospect"]["samples"][i,:][1],
+    global nSamples = size(config["prospect"]["samples"],1)
+    global Samples = [Sample(config["prospect"]["samples"][i][1],
+                      config["prospect"]["samples"][i][2],
                       config["prospect"]["samples_form"][i],
-                      config["prospect"]["prospect.samples_weights"][i]) for i in 1:nSamples] 
+                      config["prospect"]["samples_weights"][i]) for i in 1:nSamples] 
 catch e
     print("Sample configuration not found (or configuration incomplete)")
 end
