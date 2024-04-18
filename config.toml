@@ -41,6 +41,6 @@ deposit.type = "Fine" # Deposit equivalent to samples.samples_form
 
 display.log = true # Display the log of probabilities
 
-display.highlight_deposit = true # Highlight the deposit on the display
+display.highlight_deposit = false # Highlight the deposit on the display
 
 

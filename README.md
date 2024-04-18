@@ -29,3 +29,10 @@ An example of the log-anomaly presented by an auriferous reef on the slopes of t
   </tr>
 </table>
 
+To make (useless and computationally expensive) colourful diagrams like this simply adjust the configurations in the config.toml file (instructions are in comments in the file) and run the sim.jl file. Elevation data is widely avaliable (in Australia) from [Elivs](https://elevation.fsdf.org.au/).
+
+PlotlyJS, Images, ImageView, ArchGDAL, StatsBase and DelimitedFiles will need to be installed prior to running.
+
+### Some basic performance notes:
+- Keep either _res_ small (less than ~1000 if possible) or use smaller TIF files as PlotlyJS struggles to display larger images and simulation time also drastically increases with larger values of _res_
+- It is possible to produce very clean images with not that many simulations (~1000 per sample), unless _display.log_ is true, in which case ~10,000 simulations per sample is needed. Simulating deposits with _display.log_ true can require in the order of 100,000s of simulations to produce a crisp images. Simulating deposits also tends to demand a higher _res_ value
