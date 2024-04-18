@@ -49,6 +49,9 @@ catch e
 end
 
 #Load deposit information (if it exists)
+
+Reef = nothing
+
 try
     deposit_x = config["deposit"]["center_x"]
     deposit_y = config["deposit"]["center_y"]
@@ -57,28 +60,81 @@ try
     dip = config["deposit"]["dip"]
 
     type = "-"
+
     try
         type = config["deposit"]["type"]
     catch
-        @warn "Type of deposit not decleared, defaulting to normal"
+        @warn "Type of deposit not decleared, defaulting to normal (no expodent to gradient weighting)"
     end
     
-    Reef = reef(size(elv_data,2)+deposit_x,size(elv_data,1)+deposit_y,50,250,70,elv_data,"-")
+    Reef = reef(size(elv_data,2)+deposit_x,size(elv_data,1)+deposit_y,trend,length,dip,elv_data,type)
 
 catch e
     print("Deposit configuration not found (or configuration incomplete, defaulting to singe sample)")
-
-
 end
 
-Reef = reef(res-20,res-30,50,250,70,elv_data,"-")
+#Load sample information (if it exists)
 
-heat_map = revLoam(Reef,elv_data,arc_probs,100000,false)
+Samples = nothing
+nSamples = 0
+Samples = nothing
 
-max = maximum(heat_map)
+try
+    nSamples = size(config["prospect"]["samples"],1)
+    Samples = [Sample(config["prospect"]["samples"][i,:][0],
+                      config["prospect"]["samples"][i,:][1],
+                      config["prospect"]["samples_form"][i],
+                      config["prospect"]["prospect.samples_weights"][i]) for i in 1:nSamples] 
+catch e
+    print("Sample configuration not found (or configuration incomplete)")
+end
 
-for sample in Reef
+objective = config["sim"]["type"]
+heat_map = nothing
+
+if(objective == "Loam")
+
+    if(Reef !== nothing)
+        @warn "Deposits cannot be used in Loam mode - only samples"
+    end
+
+    if(Samples === nothing)
+        throw("Need at least one sample for loaming modes")
+    end
+    
+    heat_map = Loam(Samples,elv_data,arc_probs,config["sim"]["sims"],false)
+
+elseif(objective == "LoamX")
+
+    if(Reef !== nothing)
+        @warn "Deposits cannot be used in LoamX mode - only samples"
+    end
+
+    if(Samples === nothing)
+        throw("Need at least one sample for loaming modes")
+
+    elseif(nSamples < 2)
+        @warn "At least two samples should be used for LoamX mode"
+    end
+
+    heat_map = Loam(Samples,elv_data,arc_probs,config["sim"]["sims"],true)
+
+elseif(objective == "Reverse-Loam")
+
+    if((Samples === nothing) & (Reef === nothing))
+        throw("No deposit or samples decleared - no simulation is possible")
+    end 
+    heat_map = if(Samples === nothing) revLoam(Reef,elv_data,arc_probs,config["sim"]["sims"],false) else revLoam(Samples,elv_data,arc_probs,config["sim"]["sims"],false) end 
+else
+    throw("Incorrect sim type:"*objective)
+end
+
+
+if(config["display"]["highlight_deposit"])
+    max = maximum(heat_map)
+    for sample in Reef
         heat_map[sample.y,sample.x] = max+1 # Set the reef to the maximum value as to make it evident
+    end
 end
 
 z = elv_data
@@ -86,7 +142,7 @@ x_bounds, y_bounds = size(z)
 x = 1:x_bounds
 y = 1:y_bounds
 
-heat_map = log.(heat_map .+ 1) # Display log-probablity
+if(config["display"]["log"]) heat_map = log.(heat_map .+ 1) end # Display log-probablity
 
 fig=Plot([surface(x=x, y=y, z=z, surfacecolor=heat_map, 
         colorscale=colors.gist_earth, colorbar_thickness=25, colorbar_len=0.75

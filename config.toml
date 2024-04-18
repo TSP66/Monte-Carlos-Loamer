@@ -7,9 +7,11 @@ sim.square_size = 650 # The side length of the square that is the focus area. If
 sim.centre_of_square_x = 4087 #The coordinates of the focus square
 sim.centre_of_square_y = 1558
 
-sim.type = "Loam" #prospect.type options: "Loam", "LoamX", "Reverse-Loam", "prospectivityMap"
+sim.type = "Loam" #prospect.type options: "Loam", "LoamX" and "Reverse-Loam". To be added - "prospectivityMap"
 
 sim.sims = 100000 # The total number of simulations to perform
+
+sim.multithreading_enabled = false # Untested multithreading code
 
 #Either prospect.samples must be decleared or prospect.deposit must be, both can be decleared 
 
@@ -40,7 +42,5 @@ deposit.type = "Fine" # Deposit equivalent to samples.samples_form
 display.log = true # Display the log of probabilities
 
 display.highlight_deposit = true # Highlight the deposit on the display
-
-# Simulation options
 
 
