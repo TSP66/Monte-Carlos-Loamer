@@ -13,20 +13,13 @@ An example of the log-anomaly presented by an auriferous reef on the slopes of t
 <table>
   <tr>
     <td>
-      <img src="https://github.com/TSP66/Monte-Carlos-Loamer/blob/main/Images/Example_1.png" alt="Image 1">
+      <img src="https://github.com/TSP66/Monte-Carlos-Loamer/blob/main/Images/Example_2.png" alt="Image 1">
     </td>
     <td>
-      <img src="https://github.com/TSP66/Monte-Carlos-Loamer/blob/main/Images/Example_2.png" alt="Image 2">
+      <img src="https://github.com/TSP66/Monte-Carlos-Loamer/blob/main/Images/Example_4.png" alt="Image 2">
     </td>
   </tr>
   <tr>
-    <td>
-      <img src="https://github.com/TSP66/Monte-Carlos-Loamer/blob/main/Images/Example_3.png" alt="Image 3">
-    </td>
-    <td>
-      <img src="https://github.com/TSP66/Monte-Carlos-Loamer/blob/main/Images/Example_4.png" alt="Image 4">
-    </td>
-  </tr>
 </table>
 
 To make (useless and computationally expensive) colourful diagrams like this simply adjust the configurations in the config.toml file (instructions are in comments in the file) and run the sim.jl file. Elevation data is widely avaliable (in Australia) from [Elivs](https://elevation.fsdf.org.au/).
